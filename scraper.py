@@ -2,6 +2,7 @@ import re
 import os
 from urllib.parse import urlparse, urljoin, urldefrag
 from bs4 import BeautifulSoup
+from lxml import etree # "pip install lxml" in terminal
 
 
 
@@ -15,6 +16,7 @@ ALLOWED_DOMAINS = [
     "informatics.uci.edu",
     "stat.uci.edu"
 ]
+
 def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
@@ -29,12 +31,25 @@ def extract_next_links(url, resp):
     if resp.status != 200:
         return compiled_links
 
-    try:
-        content_type = resp.raw_response.headers.get("Content-Type", "").lower()
-        if "html" not in content_type: # html specifc to avoid images !! just as a quick note for us 
-            return []
+    content_type = resp.raw_response.headers.get("Content-Type", "").lower()
+    # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
+     # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
 
-        soup_info = BeautifulSoup(resp.raw_response.content, "html.parser") # this is the return of the information which will be paresed in html
+    '''
+    if "xml" in content_type or "html" in content_type:  # html specifc to avoid images !! just as a quick note for us 
+        compiled_links.append() 
+        []
+    elif "text/plain" in content_type:
+        compiled_links.append()
+    '''
+    if "html" not in content_type:
+        return []
+    try:
+        # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
+        # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
+
+
+        soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
 
         for id_tag in soup_info.find_all("a", href=True):
             raw_href = id_tag["href"]
@@ -79,7 +94,7 @@ def is_valid(url):
 
 Filtering:
 - ics open lab + from terminal 
-- Honor the politeness delay for each site
+- Honor the politeness delay for each site ✅
 - Crawl all pages with high textual information content
 - Detect and avoid infinite traps
 - Detect and avoid sets of similar pages with no information
