@@ -2,7 +2,8 @@ import re
 import os
 from urllib.parse import urlparse, urljoin, urldefrag
 from bs4 import BeautifulSoup
-from lxml import etree # "pip install lxml" in terminal
+from lxml import etree
+import tokenizer # "pip install lxml" in terminal
 
 
 
@@ -50,7 +51,7 @@ def extract_next_links(url, resp):
 
 
         soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
-
+        tokenizer(resp) # calling the tokenizer function on our response 
         for id_tag in soup_info.find_all("a", href=True):
             raw_href = id_tag["href"]
 
@@ -59,7 +60,6 @@ def extract_next_links(url, resp):
             clean_url, _ = urldefrag(absolute_url)
 
             compiled_links.append(clean_url)
-
         return compiled_links
 
     except Exception as e:
