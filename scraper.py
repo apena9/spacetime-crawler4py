@@ -13,7 +13,7 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'wics.ics.uci.edu',
     'isg.ics.uci.edu/events',
     'isg.ics.uci.edu/event',
-    'intranet.ics.uci.edu/doku.php'
+    'doku.php'
 '''
 wics ALL MAINLY JUST EVENT STUFF,
 
@@ -40,8 +40,6 @@ ALLOWED_DOMAINS = [
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     scraped_urls = [link for link in links if is_valid(link)]
-    for url in scraped_urls:
-        print(type(url))
     update_subdomains(scraped_urls)
     return scraped_urls
 
