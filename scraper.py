@@ -123,6 +123,8 @@ def is_valid(url):
         raise
 
 def is_valid_domain(url : str) -> bool:
+    if isinstance(url, type(None)):
+        return False
     for domain in ALLOWED_DOMAINS:
         if domain in url: # when URL is NONE
             return True
