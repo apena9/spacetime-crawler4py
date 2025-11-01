@@ -13,17 +13,20 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'wics.ics.uci.edu',
     '/events',
     'isg.ics.uci.edu/event',
-    'doku.php'
+    'doku.php',
+    'ics.uci.edu/~eppstein/pix',
+    'physics.uci.edu',
+    'cecs.uci.edu'
 ]
 '''
 wics ALL MAINLY JUST EVENT STUFF,
-
+ß
 calendar,
 ical,
 tribe,
 
 doku.php -- multiple instances 
-eppstein/pix,
+eppstein/pix,  -- reacherd
 
 /events,
 /event 
