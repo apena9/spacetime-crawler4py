@@ -14,6 +14,7 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'isg.ics.uci.edu/events',
     'isg.ics.uci.edu/event',
     'doku.php'
+]
 '''
 wics ALL MAINLY JUST EVENT STUFF,
 
@@ -21,13 +22,12 @@ calendar,
 ical,
 tribe,
 
-doku,
+doku.php -- multiple instances 
 eppstein/pix,
 
 /events,
 /event 
 '''
-]
 
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
