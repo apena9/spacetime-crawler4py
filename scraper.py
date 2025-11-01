@@ -1,22 +1,49 @@
 import re
 import os
 from urllib.parse import urlparse, urljoin, urldefrag
+
+from subdomains import update_subdomains
+
+import tldextract # pip install tldextract
 from bs4 import BeautifulSoup
 from lxml import etree
 import tokenizer # "pip install lxml" in terminal
 
 
+TRAPS = [ #list of strings representing keywords that indicate a trap
+    'wics.ics.uci.edu/events',
+    'wics.ics.uci.edu/event',
+    'igs.ics.uci.edu/event',
+    '',
+    ,
+    ,
+    ,
 
-def scraper(url, resp):
-    links = extract_next_links(url, resp)
-    return [link for link in links if is_valid(link)]
-
+'''
+wics ALL MAINLY JUST EVENT STUFF,
+calendar,
+ical,
+tribe,
+doku,
+eppstein/pix,
+/events,
+/event 
+'''
+]
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
     "cs.uci.edu",
     "informatics.uci.edu",
     "stat.uci.edu"
 ]
+
+
+def scraper(url, resp):
+    links = extract_next_links(url, resp)
+    scraped_urls = [link for link in links if is_valid(link)]
+    update_subdomains(scraped_urls)
+    return scraped_urls
+
 
 def extract_next_links(url, resp):
     # Implementation required.
@@ -49,7 +76,6 @@ def extract_next_links(url, resp):
         # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
         # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
 
-
         soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
         tokenizer(resp) # calling the tokenizer function on our response 
         for id_tag in soup_info.find_all("a", href=True):
@@ -75,9 +101,11 @@ def is_valid(url):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
-        if not any(domain in parsed.netloc for domain in ALLOWED_DOMAINS):
+        if not is_valid_domain(parsed.hostname): # check if domain is valid
             return False
-        return not re.match(
+        if is_trap(url):# check for traps
+            return False
+        if re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -85,16 +113,37 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+            return False
+        return True
 
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
+def is_valid_domain(url : str) -> bool:
+    ext = tldextract.extract(url)
+    base_domain = f'{ext.domain}.{ext.suffix}'.lower()
+    return base_domain in ALLOWED_DOMAINS
+
+def is_trap(url: str) -> bool: # DETECT_TRAP
+    '''
+    rules:
+
+    if path depth exceeds 15
+    '''
+    for trap in TRAPS:
+        if trap in url:
+            return True
+    return False
+
+
+
 '''
 
 Filtering:
 - ics open lab + from terminal 
-- Honor the politeness delay for each site ✅
+- Honor the politeness delay for each site 
 - Crawl all pages with high textual information content
 - Detect and avoid infinite traps
 - Detect and avoid sets of similar pages with no information
