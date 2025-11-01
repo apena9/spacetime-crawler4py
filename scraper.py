@@ -124,7 +124,7 @@ def is_valid(url):
 
 def is_valid_domain(url : str) -> bool:
     for domain in ALLOWED_DOMAINS:
-        if domain in url:
+        if domain in url: # when URL is NONE
             return True
     return False
 
