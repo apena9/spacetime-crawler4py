@@ -3,8 +3,7 @@ import os
 from urllib.parse import urlparse, urljoin, urldefrag
 
 from subdomains import update_subdomains
-
-import tldextract # pip install tldextract
+ # pip install tldextract
 from bs4 import BeautifulSoup
 from lxml import etree # "pip install lxml" in terminal
 import tokenizer
@@ -12,7 +11,8 @@ import tokenizer
 
 TRAPS = [ #list of strings representing keywords that indicate a trap
     'wics.ics.uci.edu',
-    'igs.ics.uci.edu/events',
+    'isg.ics.uci.edu/events',
+    'isg.ics.uci.edu/event'
     'intranet.ics.uci.edu/doku.php'
 '''
 wics ALL MAINLY JUST EVENT STUFF,
@@ -105,7 +105,7 @@ def is_valid(url):
             return False
         if is_trap(url):# check for traps
             return False
-        if re.match(
+        return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -113,18 +113,17 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
-            return False
-        return True
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
         raise
 
 def is_valid_domain(url : str) -> bool:
-    ext = tldextract.extract(url)
-    base_domain = f'{ext.domain}.{ext.suffix}'.lower()
-    return base_domain in ALLOWED_DOMAINS
+    for domain in ALLOWED_DOMAINS:
+        if domain in url:
+            return True
+    return False
 
 def is_trap(url: str) -> bool: # DETECT_TRAP
     '''
