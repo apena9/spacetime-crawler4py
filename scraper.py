@@ -12,7 +12,7 @@ import tokenizer
 
 TRAPS = [ #list of strings representing keywords that indicate a trap
     'wics.ics.uci.edu',
-    'igs.ics.uci.edu/event',
+    'igs.ics.uci.edu/events',
     'intranet.ics.uci.edu/doku.php'
 '''
 wics ALL MAINLY JUST EVENT STUFF,
