@@ -30,6 +30,9 @@ eppstein/pix,
 /event 
 '''
 ]
+
+
+
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
     "cs.uci.edu",
