@@ -6,30 +6,29 @@ from subdomains import update_subdomains
 
 import tldextract # pip install tldextract
 from bs4 import BeautifulSoup
-from lxml import etree
-import tokenizer # "pip install lxml" in terminal
+from lxml import etree # "pip install lxml" in terminal
+import tokenizer
 
 
 TRAPS = [ #list of strings representing keywords that indicate a trap
-    'wics.ics.uci.edu/events',
-    'wics.ics.uci.edu/event',
+    'wics.ics.uci.edu',
     'igs.ics.uci.edu/event',
-    '',
-    ,
-    ,
-    ,
-
+    'intranet.ics.uci.edu/doku.php'
 '''
 wics ALL MAINLY JUST EVENT STUFF,
+
 calendar,
 ical,
 tribe,
+
 doku,
 eppstein/pix,
+
 /events,
 /event 
 '''
 ]
+
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
     "cs.uci.edu",
@@ -86,6 +85,7 @@ def extract_next_links(url, resp):
             clean_url, _ = urldefrag(absolute_url)
 
             compiled_links.append(clean_url)
+
         return compiled_links
 
     except Exception as e:
