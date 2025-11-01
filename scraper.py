@@ -16,7 +16,9 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'doku.php',
     'ics.uci.edu/~eppstein/pix',
     'physics.uci.edu',
-    'cecs.uci.edu'
+    'cecs.uci.edu',
+    'grape.ics.uci.edj/wiki/public/timeline',
+    'https://ncs.ics.uci.edu/wp-login.php'
 ]
 '''
 wics ALL MAINLY JUST EVENT STUFF,
@@ -31,6 +33,10 @@ eppstein/pix,  -- reacherd
 /events,
 /event 
 '''
+
+DUPLICATES = [
+    'grape.ics.uci.ed/wiki/public/wiki'
+]
 
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
@@ -108,6 +114,8 @@ def is_valid(url):
             return False
         if is_trap(url):# check for traps
             return False
+        if is_duplicate(parsed):
+            return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -138,6 +146,13 @@ def is_trap(url: str) -> bool: # DETECT_TRAP
     '''
     for trap in TRAPS:
         if trap in url:
+            return True
+    return False
+
+def is_duplicate(parsed_url) -> bool: #duplicates hueristically
+    string_url = f'{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}'
+    for duplicate in DUPLICATES:
+        for duplicate in string_url:
             return True
     return False
 
