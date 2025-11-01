@@ -1,6 +1,11 @@
 from utils import get_logger
 from urllib.parse import urlparse
-from scraper import ALLOWED_DOMAINS
+ALLOWED_DOMAINS = [
+    "ics.uci.edu",
+    "cs.uci.edu",
+    "informatics.uci.edu",
+    "stat.uci.edu"
+]
 
 subdomains = dict() # string, int key value pairs (url, count)
 subdomains_logger = get_logger('Subdomains')
