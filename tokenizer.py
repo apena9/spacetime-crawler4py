@@ -32,13 +32,13 @@ def tokenize(text):
                 parsed.append(word_builder.lower())
 
         # Count most common tokens
-        counter = Counter(parsed)
+        counter = Counter(parsed) #
         top_50 = counter.most_common(50)
-
+        print("ok")
         for i, (word, count) in enumerate(top_50, start=1):
             print(f"{i:2}. {word:<15} {count}")
 
     except Exception as e:
         print(f"Error found: {e}")
-
+    
     return parsed  # Return list of tokens
