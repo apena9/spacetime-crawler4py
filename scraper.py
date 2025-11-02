@@ -149,11 +149,16 @@ def is_trap(url: str) -> bool: # DETECT_TRAP
             return True
     return False
 
+duplicate_paths = set()
 def is_duplicate(parsed_url) -> bool: #duplicates hueristically
     string_url = f'{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}'
     for duplicate in DUPLICATES:
-        for duplicate in string_url:
-            return True
+        if duplicate in string_url:
+            if string_url in duplicate_paths:
+                return True
+            else:
+                duplicate_paths.add(string_url)
+                return False
     return False
 
 
