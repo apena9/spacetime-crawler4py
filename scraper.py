@@ -1,3 +1,4 @@
+
 import re
 import os
 from urllib.parse import urlparse, urljoin, urldefrag
@@ -11,25 +12,22 @@ import tokenizer # "pip install lxml" in terminal
 
 
 TRAPS = [ #list of strings representing keywords that indicate a trap
-    'wics.ics.uci.edu/events',
-    'wics.ics.uci.edu/event',
-    'igs.ics.uci.edu/event',
-    '',
-    ,
-    ,
-    ,
+    'wics.ics.uci.edu',
+    'intranent.ics.uci.edu/doku.php',
+    'igs.ics.uci.edu/event']
+    
 
 '''
 wics ALL MAINLY JUST EVENT STUFF,
 calendar,
 ical,
 tribe,
-doku,
+doku,:
 eppstein/pix,
 /events,
 /event 
 '''
-]
+
 
 
 
@@ -80,7 +78,10 @@ def extract_next_links(url, resp):
         # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
 
         soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
-        tokenizer(resp) # calling the tokenizer function on our response 
+        #tokenizer(resp) # calling the tokenizer function on our response
+        #text_list = [s.get_text() for s in soup_info.find_all(text=True)]
+        #tokenizer.tokenize(text_list)   # call your tokenizer here
+ 
         for id_tag in soup_info.find_all("a", href=True):
             raw_href = id_tag["href"]
 
@@ -108,7 +109,7 @@ def is_valid(url):
             return False
         if is_trap(url):# check for traps
             return False
-        if re.match(
+        return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -116,9 +117,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
-            return False
-        return True
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
