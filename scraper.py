@@ -22,7 +22,7 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
 ]
 '''
 wics ALL MAINLY JUST EVENT STUFF,
-ß
+
 calendar,
 ical,
 tribe,
@@ -52,7 +52,8 @@ def scraper(url, resp):
     update_subdomains(scraped_urls)
     return scraped_urls
 
-
+#MIN_HTML_BYTES = ;
+#MIN_VISIBLE_WORDS = ;
 def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
@@ -66,18 +67,58 @@ def extract_next_links(url, resp):
     compiled_links = []
     if resp.status != 200:
         return compiled_links
-
+    
+    headers = resp.raw_response.headers
     content_type = resp.raw_response.headers.get("Content-Type", "").lower()
+    content_bytes = resp.raw_response.content or b""
+
     # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
      # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
+     
+     #Dead URL: HTTP 200 but tiny/empty body
+    if len(content_bytes) < MIN_HTML_BYTES and (
+        "html" in content_type or "xml" in content_type or "text" in content_type
+    ):
+        return compiled_links
+    # ====== HTML ======== --> 
+    if "text/html" not in content_type: 
+        try:
+        # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
+        # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
+            soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
+          
+            visible_text = soup_info.get_text(strip=True) #gets all text from file.theoretically works for html,lxml, and plan text
+             # tokenizer(resp) # tokenizer takes (hopefully) just a string.
+            if tokenizer is not None:
+                try:
+                    tokens = tokenizer(visible_text)
+                    if tokens is not None and len(tokens) < MIN_VISIBILE_WORDS: # treat as dead/empty HTML page
+                        return []
+                except Exception:
+                    pass
+          
+            for id_tag in soup_info.find_all("a", href=True): # this would be only difference between pages.
+               raw_href = id_tag["href"]
 
-    '''
-    if "xml" in content_type or "html" in content_type:  # html specifc to avoid images !! just as a quick note for us 
-        compiled_links.append() 
-        []
-    elif "text/plain" in content_type:
-        compiled_links.append()
-    '''
+               absolute_url = urljoin(resp.url, raw_href)
+
+               clean_url, _ = urldefrag(absolute_url)
+
+               compiled_links.append(clean_url)
+          
+            seen = set()
+            deduped = []
+            for u in compiled_links:
+                if u not in seen:
+                    seen.add(u)
+                    deduped.append(u)
+            return deduped
+        
+        except Exception as e:
+            print(f"Error extracting links from {url}: {e}")
+            return []
+
+'''
     if "html" not in content_type:
         return []
     try:
@@ -100,7 +141,7 @@ def extract_next_links(url, resp):
     except Exception as e:
         print(f"Error extracting links from {url}: {e}")
         return []
-
+'''
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
