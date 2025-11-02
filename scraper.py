@@ -52,8 +52,8 @@ def scraper(url, resp):
     update_subdomains(scraped_urls)
     return scraped_urls
 
-#MIN_HTML_BYTES = ;
-#MIN_VISIBLE_WORDS = ;
+MIN_HTML_BYTES = 65
+MIN_VISIBLE_WORDS = 8
 def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
