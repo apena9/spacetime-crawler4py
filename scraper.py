@@ -4,32 +4,40 @@ import os
 from urllib.parse import urlparse, urljoin, urldefrag
 
 from subdomains import update_subdomains
-
-import tldextract # pip install tldextract
+ # pip install tldextract
 from bs4 import BeautifulSoup
-from lxml import etree
-import tokenizer # "pip install lxml" in terminal
+from lxml import etree # "pip install lxml" in terminal
+import tokenizer
 
 
 TRAPS = [ #list of strings representing keywords that indicate a trap
     'wics.ics.uci.edu',
-    'intranent.ics.uci.edu/doku.php',
-    'igs.ics.uci.edu/event']
-    
-
+    '/events',
+    'isg.ics.uci.edu/event',
+    'doku.php',
+    'ics.uci.edu/~eppstein/pix',
+    'physics.uci.edu',
+    'cecs.uci.edu',
+    'grape.ics.uci.edj/wiki/public/timeline',
+    'https://ncs.ics.uci.edu/wp-login.php'
+]
 '''
 wics ALL MAINLY JUST EVENT STUFF,
+
 calendar,
 ical,
 tribe,
-doku,:
-eppstein/pix,
+
+doku.php -- multiple instances 
+eppstein/pix,  -- reacherd
+
 /events,
 /event 
 '''
 
-
-
+DUPLICATES = [
+    'grape.ics.uci.ed/wiki/public/wiki'
+]
 
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
@@ -45,7 +53,8 @@ def scraper(url, resp):
     update_subdomains(scraped_urls)
     return scraped_urls
 
-
+MIN_HTML_BYTES = 65
+MIN_VISIBLE_WORDS = 8
 def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
@@ -59,18 +68,58 @@ def extract_next_links(url, resp):
     compiled_links = []
     if resp.status != 200:
         return compiled_links
-
+    
+    headers = resp.raw_response.headers
     content_type = resp.raw_response.headers.get("Content-Type", "").lower()
+    content_bytes = resp.raw_response.content or b""
+
     # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
      # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
+     
+     #Dead URL: HTTP 200 but tiny/empty body
+    if len(content_bytes) < MIN_HTML_BYTES and (
+        "html" in content_type or "xml" in content_type or "text" in content_type
+    ):
+        return compiled_links
+    # ====== HTML ======== --> 
+    if "text/html" not in content_type: 
+        try:
+        # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
+        # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
+            soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
+          
+            visible_text = soup_info.get_text(strip=True) #gets all text from file.theoretically works for html,lxml, and plan text
+             # tokenizer(resp) # tokenizer takes (hopefully) just a string.
+            if tokenizer is not None:
+                try:
+                    tokens = tokenizer(visible_text)
+                    if tokens is not None and len(tokens) < MIN_VISIBILE_WORDS: # treat as dead/empty HTML page
+                        return []
+                except Exception:
+                    pass
+          
+            for id_tag in soup_info.find_all("a", href=True): # this would be only difference between pages.
+               raw_href = id_tag["href"]
 
-    '''
-    if "xml" in content_type or "html" in content_type:  # html specifc to avoid images !! just as a quick note for us 
-        compiled_links.append() 
-        []
-    elif "text/plain" in content_type:
-        compiled_links.append()
-    '''
+               absolute_url = urljoin(resp.url, raw_href)
+
+               clean_url, _ = urldefrag(absolute_url)
+
+               compiled_links.append(clean_url)
+          
+            seen = set()
+            deduped = []
+            for u in compiled_links:
+                if u not in seen:
+                    seen.add(u)
+                    deduped.append(u)
+            return deduped
+        
+        except Exception as e:
+            print(f"Error extracting links from {url}: {e}")
+            return []
+
+'''
     if "html" not in content_type:
         return []
     try:
@@ -78,10 +127,7 @@ def extract_next_links(url, resp):
         # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
 
         soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
-        #tokenizer(resp) # calling the tokenizer function on our response
-        #text_list = [s.get_text() for s in soup_info.find_all(text=True)]
-        #tokenizer.tokenize(text_list)   # call your tokenizer here
- 
+        #tokenizer(resp) # calling the tokenizer function on our response 
         for id_tag in soup_info.find_all("a", href=True):
             raw_href = id_tag["href"]
 
@@ -90,12 +136,13 @@ def extract_next_links(url, resp):
             clean_url, _ = urldefrag(absolute_url)
 
             compiled_links.append(clean_url)
+
         return compiled_links
 
     except Exception as e:
         print(f"Error extracting links from {url}: {e}")
         return []
-
+'''
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -108,6 +155,8 @@ def is_valid(url):
         if not is_valid_domain(parsed.hostname): # check if domain is valid
             return False
         if is_trap(url):# check for traps
+            return False
+        if is_duplicate(parsed):
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
@@ -124,9 +173,12 @@ def is_valid(url):
         raise
 
 def is_valid_domain(url : str) -> bool:
-    ext = tldextract.extract(url)
-    base_domain = f'{ext.domain}.{ext.suffix}'.lower()
-    return base_domain in ALLOWED_DOMAINS
+    if isinstance(url, type(None)):
+        return False
+    for domain in ALLOWED_DOMAINS:
+        if domain in url: # when URL is NONE
+            return True
+    return False
 
 def is_trap(url: str) -> bool: # DETECT_TRAP
     '''
@@ -137,6 +189,18 @@ def is_trap(url: str) -> bool: # DETECT_TRAP
     for trap in TRAPS:
         if trap in url:
             return True
+    return False
+
+duplicate_paths = set()
+def is_duplicate(parsed_url) -> bool: #duplicates hueristically
+    string_url = f'{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}'
+    for duplicate in DUPLICATES:
+        if duplicate in string_url:
+            if string_url in duplicate_paths:
+                return True
+            else:
+                duplicate_paths.add(string_url)
+                return False
     return False
 
 
