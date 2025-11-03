@@ -19,20 +19,14 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'physics.uci.edu',
     'cecs.uci.edu',
     'grape.ics.uci.edj/wiki/public/timeline',
-    'https://ncs.ics.uci.edu/wp-login.php'
+    'ngs.ics.uci.edu/wp-login.php'
 ]
 '''
-wics ALL MAINLY JUST EVENT STUFF,
-
 calendar,
 ical,
 tribe,
 
-doku.php -- multiple instances 
-eppstein/pix,  -- reacherd
-
 /events,
-/event 
 '''
 
 DUPLICATES = [
@@ -69,7 +63,6 @@ def extract_next_links(url, resp):
     if resp.status != 200:
         return compiled_links
     
-    headers = resp.raw_response.headers
     content_type = resp.raw_response.headers.get("Content-Type", "").lower()
     content_bytes = resp.raw_response.content or b""
 
@@ -119,30 +112,6 @@ def extract_next_links(url, resp):
             print(f"Error extracting links from {url}: {e}")
             return []
 
-'''
-    if "html" not in content_type:
-        return []
-    try:
-        # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
-        # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
-
-        soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
-        #tokenizer(resp) # calling the tokenizer function on our response 
-        for id_tag in soup_info.find_all("a", href=True):
-            raw_href = id_tag["href"]
-
-            absolute_url = urljoin(resp.url, raw_href)
-
-            clean_url, _ = urldefrag(absolute_url)
-
-            compiled_links.append(clean_url)
-
-        return compiled_links
-
-    except Exception as e:
-        print(f"Error extracting links from {url}: {e}")
-        return []
-'''
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
