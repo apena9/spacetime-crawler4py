@@ -19,7 +19,7 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'physics.uci.edu',
     'cecs.uci.edu',
     'grape.ics.uci.edj/wiki/public/timeline',
-    'ngs.ics.uci.edu/wp-login.php'
+    'wp-login.php'
 ]
 '''
 calendar,
