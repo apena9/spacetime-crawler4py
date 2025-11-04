@@ -1,4 +1,7 @@
-from nltk.corpus import stopwords # pip install nltk
+import nltk # pip install nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
 from krovetzstemmer import Stemmer # pip install krovetzstemmer
 
 
@@ -17,8 +20,6 @@ def compute_word_frequencies(token_list: list[str], token_frequencies: dict):
             token_frequencies[token] += 1
         except KeyError:
             token_frequencies[token] = 1
-            
-    return token_frequencies
 
 def tokenize(text):
     """
