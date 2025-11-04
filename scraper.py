@@ -99,17 +99,6 @@ def extract_next_links(url, resp):
         print(f"Error extracting links from {url}: {e}")
         return []
 
-DUPLICATES = [
-    'grape.ics.uci.ed/wiki/public/wiki'
-]
-
-ALLOWED_DOMAINS = [
-    "ics.uci.edu",
-    "cs.uci.edu",
-    "informatics.uci.edu",
-    "stat.uci.edu"
-]
-
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
@@ -137,7 +126,13 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
-
+    
+ALLOWED_DOMAINS = [
+    "ics.uci.edu",
+    "cs.uci.edu",
+    "informatics.uci.edu",
+    "stat.uci.edu"
+]
 def is_valid_domain(url : str) -> bool:
     global ALLOWED_DOMAINS
     if isinstance(url, type(None)):
@@ -159,6 +154,9 @@ def is_trap(url: str) -> bool: # DETECT_TRAP
     return False
 
 duplicate_paths = set()
+DUPLICATES = [
+    'grape.ics.uci.ed/wiki/public/wiki'
+]
 def is_duplicate(parsed_url) -> bool: #duplicates hueristically
     global duplicate_paths
     global DUPLICATES
