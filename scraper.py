@@ -1,11 +1,9 @@
 
 import re
-import os
 from urllib.parse import urlparse, urljoin, urldefrag
 
 from subdomains import update_subdomains
 from collections import namedtuple
-from utils import get_logger
 
 from bs4 import BeautifulSoup
 from lxml import etree # "pip install lxml" in terminal
@@ -27,21 +25,7 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
 calendar,
 ical,
 tribe,
-
-/events,
 '''
-
-DUPLICATES = [
-    'grape.ics.uci.ed/wiki/public/wiki'
-]
-
-ALLOWED_DOMAINS = [
-    "ics.uci.edu",
-    "cs.uci.edu",
-    "informatics.uci.edu",
-    "stat.uci.edu"
-]
-
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
@@ -49,13 +33,14 @@ def scraper(url, resp):
     update_subdomains(scraped_urls)
     return scraped_urls
 
+
 MIN_HTML_BYTES = 64
 MIN_VISIBLE_WORDS = 8
 
 Page = namedtuple("Page",['url','word_count','tokens'])
 longest_page = Page(url = "", word_count = 0, tokens = [])
-page_contents = get_logger("ParsedContents")
 all_word_frequencies = dict()
+
 def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
@@ -74,21 +59,19 @@ def extract_next_links(url, resp):
     content_bytes = resp.raw_response.content or b""
      
      #Dead URL: HTTP 200 but tiny/empty body
-    if len(content_bytes) < MIN_HTML_BYTES and (
-        "html" in content_type or "xml" in content_type or "text" in content_type
-    ):
+    if len(content_bytes) < MIN_HTML_BYTES and ("html" in content_type):
         return compiled_links
     # ====== HTML ======== --> 
-    if "text/html" not in content_type: 
+    if "text/html" in content_type: #we do this if the content_type html
         try:
             soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
           
             visible_text = soup_info.get_text(strip=True) 
             tokens = tokenizer.tokenize(visible_text)
+
             this_page = Page(url = url, word_count = len(tokens), tokens=tokens)
-            if this_page.word_count > longest_page.word_count:
-                longest_page = this_page
-            page_contents.info(f'{url}: %s', tokens)
+            longest_page = this_page if (this_page.word_count > longest_page.word_count) else longest_page # els: no-op
+            
             tokenizer.compute_word_frequencies(tokens, all_word_frequencies)
 
             if len(tokens) < MIN_VISIBLE_WORDS: # treat as dead/empty HTML page
@@ -102,6 +85,7 @@ def extract_next_links(url, resp):
                clean_url, _ = urldefrag(absolute_url)
 
                compiled_links.append(clean_url)
+
             seen = set()
             deduped = []
             for u in compiled_links:
@@ -114,6 +98,16 @@ def extract_next_links(url, resp):
             print(f"Error extracting links from {url}: {e}")
             return []
 
+DUPLICATES = [
+    'grape.ics.uci.ed/wiki/public/wiki'
+]
+
+ALLOWED_DOMAINS = [
+    "ics.uci.edu",
+    "cs.uci.edu",
+    "informatics.uci.edu",
+    "stat.uci.edu"
+]
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
