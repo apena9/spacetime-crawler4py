@@ -9,24 +9,6 @@ from bs4 import BeautifulSoup
 from lxml import etree # "pip install lxml" in terminal
 import tokenizer
 
-
-TRAPS = [ #list of strings representing keywords that indicate a trap
-    'wics.ics.uci.edu',
-    '/events',
-    'isg.ics.uci.edu/event',
-    'doku.php',
-    'ics.uci.edu/~eppstein/pix',
-    'physics.uci.edu',
-    'cecs.uci.edu',
-    'grape.ics.uci.edj/wiki/public/timeline',
-    'login.php'
-]
-'''
-calendar,
-ical,
-tribe,
-'''
-
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     scraped_urls = [link for link in links if is_valid(link)]
@@ -142,12 +124,25 @@ def is_valid_domain(url : str) -> bool:
             return True
     return False
 
-def is_trap(url: str) -> bool: # DETECT_TRAP
-    '''
-    rules:
+TRAPS = [ #list of strings representing keywords that indicate a trap
+    'wics.ics.uci.edu',
+    '/events',
+    'isg.ics.uci.edu/event',
+    'doku.php',
+    'ics.uci.edu/~eppstein/pix',
+    'physics.uci.edu',
+    'cecs.uci.edu',
+    'grape.ics.uci.edj/wiki/public/timeline',
+    'login.php'
+]
+'''
+calendar,
+ical,
+tribe,
+'''
 
-    if path depth exceeds 15
-    '''
+def is_trap(url: str) -> bool: # DETECT_TRAP
+    global TRAPS
     for trap in TRAPS:
         if trap in url:
             return True
