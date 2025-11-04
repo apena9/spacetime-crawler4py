@@ -51,6 +51,8 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
+    global longest_page
+    global all_word_frequencies
     compiled_links = []
     if resp.status != 200:
         return compiled_links
@@ -59,44 +61,43 @@ def extract_next_links(url, resp):
     content_bytes = resp.raw_response.content or b""
      
      #Dead URL: HTTP 200 but tiny/empty body
-    if len(content_bytes) < MIN_HTML_BYTES and ("html" in content_type):
+    if len(content_bytes) < MIN_HTML_BYTES or ("html" not in content_type):
         return compiled_links
-    # ====== HTML ======== --> 
-    if "text/html" in content_type: #we do this if the content_type html
-        try:
-            soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
-          
-            visible_text = soup_info.get_text(strip=True) 
-            tokens = tokenizer.tokenize(visible_text)
-
-            this_page = Page(url = url, word_count = len(tokens), tokens=tokens)
-            longest_page = this_page if (this_page.word_count > longest_page.word_count) else longest_page # els: no-op
-            
-            tokenizer.compute_word_frequencies(tokens, all_word_frequencies)
-
-            if len(tokens) < MIN_VISIBLE_WORDS: # treat as dead/empty HTML page
-                return []
-          
-            for id_tag in soup_info.find_all("a", href=True): # this would be only difference between pages.
-               raw_href = id_tag["href"]
-
-               absolute_url = urljoin(resp.url, raw_href)
-
-               clean_url, _ = urldefrag(absolute_url)
-
-               compiled_links.append(clean_url)
-
-            seen = set()
-            deduped = []
-            for u in compiled_links:
-                if u not in seen:
-                    seen.add(u)
-                    deduped.append(u)
-            return deduped
+    # ====== HTML ======== 
+    try:
+        soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
         
-        except Exception as e:
-            print(f"Error extracting links from {url}: {e}")
+        visible_text = soup_info.get_text(strip=True) 
+        tokens = tokenizer.tokenize(visible_text)
+
+        this_page = Page(url = url, word_count = len(tokens), tokens=tokens)
+        longest_page = this_page if (this_page.word_count > longest_page.word_count) else longest_page # els: no-op
+        
+        tokenizer.compute_word_frequencies(tokens, all_word_frequencies)
+
+        if len(tokens) < MIN_VISIBLE_WORDS: # treat as dead/empty HTML page
             return []
+        
+        for id_tag in soup_info.find_all("a", href=True): # this would be only difference between pages.
+            raw_href = id_tag["href"]
+
+            absolute_url = urljoin(resp.url, raw_href)
+
+            clean_url, _ = urldefrag(absolute_url)
+
+            compiled_links.append(clean_url)
+
+        seen = set()
+        deduped = []
+        for u in compiled_links:
+            if u not in seen:
+                seen.add(u)
+                deduped.append(u)
+        return deduped
+    
+    except Exception as e:
+        print(f"Error extracting links from {url}: {e}")
+        return []
 
 DUPLICATES = [
     'grape.ics.uci.ed/wiki/public/wiki'
@@ -138,6 +139,7 @@ def is_valid(url):
         raise
 
 def is_valid_domain(url : str) -> bool:
+    global ALLOWED_DOMAINS
     if isinstance(url, type(None)):
         return False
     for domain in ALLOWED_DOMAINS:
@@ -158,6 +160,8 @@ def is_trap(url: str) -> bool: # DETECT_TRAP
 
 duplicate_paths = set()
 def is_duplicate(parsed_url) -> bool: #duplicates hueristically
+    global duplicate_paths
+    global DUPLICATES
     string_url = f'{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}'
     for duplicate in DUPLICATES:
         if duplicate in string_url:
