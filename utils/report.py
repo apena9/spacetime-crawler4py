@@ -1,16 +1,8 @@
 import os
 
 from tokenizer import print_tokens
-from subdomains import print_subdomains, subdomains
+from subdomains import print_subdomains
 import scraper # for longest page and most common 50 words (which are updated over-time)
-
-
-directory = 'Report'
-# makes a 
-
-scraper.all_word_frequencies
-
-
 
 def make_directory(directory: str):
     # creates a director where files information containing information for report are located
