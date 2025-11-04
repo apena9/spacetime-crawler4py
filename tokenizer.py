@@ -1,7 +1,4 @@
-import nltk # pip install nltk
-nltk.download('stopwords')
-from nltk.corpus import stopwords
-
+from nltk.corpus import stopwords # pip install nltk
 from krovetzstemmer import Stemmer # pip install krovetzstemmer
 
 
