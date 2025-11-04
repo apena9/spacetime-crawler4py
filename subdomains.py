@@ -1,5 +1,6 @@
 from utils import get_logger
 from urllib.parse import urlparse
+
 ALLOWED_DOMAINS = [
     "ics.uci.edu",
     "cs.uci.edu",

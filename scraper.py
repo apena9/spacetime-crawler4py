@@ -4,7 +4,9 @@ import os
 from urllib.parse import urlparse, urljoin, urldefrag
 
 from subdomains import update_subdomains
- # pip install tldextract
+from collections import namedtuple
+from utils import get_logger
+
 from bs4 import BeautifulSoup
 from lxml import etree # "pip install lxml" in terminal
 import tokenizer
@@ -19,7 +21,7 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'physics.uci.edu',
     'cecs.uci.edu',
     'grape.ics.uci.edj/wiki/public/timeline',
-    'wp-login.php'
+    'login.php'
 ]
 '''
 calendar,
@@ -47,8 +49,13 @@ def scraper(url, resp):
     update_subdomains(scraped_urls)
     return scraped_urls
 
-MIN_HTML_BYTES = 65
+MIN_HTML_BYTES = 64
 MIN_VISIBLE_WORDS = 8
+
+Page = namedtuple("Page",['url','word_count','tokens'])
+longest_page = Page(url = "", word_count = 0, tokens = [])
+page_contents = get_logger("ParsedContents")
+all_word_frequencies = dict()
 def extract_next_links(url, resp):
     # Implementation required.
     # url: the URL that was used to get the page
@@ -65,9 +72,6 @@ def extract_next_links(url, resp):
     
     content_type = resp.raw_response.headers.get("Content-Type", "").lower()
     content_bytes = resp.raw_response.content or b""
-
-    # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
-     # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
      
      #Dead URL: HTTP 200 but tiny/empty body
     if len(content_bytes) < MIN_HTML_BYTES and (
@@ -77,19 +81,18 @@ def extract_next_links(url, resp):
     # ====== HTML ======== --> 
     if "text/html" not in content_type: 
         try:
-        # other acceptable non-html formats --> XML (sitemaps) and plain text (robots.txt)
-        # changed parser from "html.parser" to "lxml" to handle both html and xml formats.
             soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
           
-            visible_text = soup_info.get_text(strip=True) #gets all text from file.theoretically works for html,lxml, and plan text
-             # tokenizer(resp) # tokenizer takes (hopefully) just a string.
-            if tokenizer is not None:
-                try:
-                    tokens = tokenizer(visible_text)
-                    if tokens is not None and len(tokens) < MIN_VISIBILE_WORDS: # treat as dead/empty HTML page
-                        return []
-                except Exception:
-                    pass
+            visible_text = soup_info.get_text(strip=True) 
+            tokens = tokenizer.tokenize(visible_text)
+            this_page = Page(url = url, word_count = len(tokens), tokens=tokens)
+            if this_page.word_count > longest_page.word_count:
+                longest_page = this_page
+            page_contents.info(f'{url}: %s', tokens)
+            tokenizer.compute_word_frequencies(tokens, all_word_frequencies)
+
+            if len(tokens) < MIN_VISIBLE_WORDS: # treat as dead/empty HTML page
+                return []
           
             for id_tag in soup_info.find_all("a", href=True): # this would be only difference between pages.
                raw_href = id_tag["href"]
@@ -99,7 +102,6 @@ def extract_next_links(url, resp):
                clean_url, _ = urldefrag(absolute_url)
 
                compiled_links.append(clean_url)
-          
             seen = set()
             deduped = []
             for u in compiled_links:
