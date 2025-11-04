@@ -119,10 +119,16 @@ def is_valid_domain(url : str) -> bool:
     global ALLOWED_DOMAINS
     if isinstance(url, type(None)):
         return False
-    for domain in ALLOWED_DOMAINS:
-        if domain in url: # when URL is NONE
-            return True
-    return False
+    parsed = urlparse(url)
+    hostname = parsed.hostname
+    if not hostname:
+        return False
+    
+    parts = hostname.split('.')
+    # take the last 3 parts to get subdomain.domain.suffix
+    last_three = '.'.join(parts[-3:])
+
+    return last_three in ALLOWED_DOMAINS
 
 TRAPS = [ #list of strings representing keywords that indicate a trap
     'wics.ics.uci.edu',
@@ -130,8 +136,6 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'isg.ics.uci.edu/event',
     'doku.php',
     'ics.uci.edu/~eppstein/pix',
-    'physics.uci.edu',
-    'cecs.uci.edu',
     'grape.ics.uci.edj/wiki/public/timeline',
     'login.php'
 ]
