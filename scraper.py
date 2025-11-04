@@ -119,12 +119,8 @@ def is_valid_domain(url : str) -> bool:
     global ALLOWED_DOMAINS
     if isinstance(url, type(None)):
         return False
-    parsed = urlparse(url)
-    hostname = parsed.hostname
-    if not hostname:
-        return False
     
-    parts = hostname.split('.')
+    parts = url.split('.')
     # take the last 3 parts to get subdomain.domain.suffix
     last_three = '.'.join(parts[-3:])
 
