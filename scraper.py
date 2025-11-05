@@ -6,7 +6,6 @@ from subdomains import update_subdomains
 from collections import namedtuple
 
 from bs4 import BeautifulSoup
-from lxml import etree # "pip install lxml" in terminal
 import tokenizer
 
 def scraper(url, resp):
@@ -16,8 +15,8 @@ def scraper(url, resp):
     return scraped_urls
 
 
-MIN_HTML_BYTES = 64
-MIN_VISIBLE_WORDS = 8
+MIN_HTML_BYTES = 40 * 8 # reflect changes from visible words
+MIN_VISIBLE_WORDS = 40 # more aggressive filtering for low-text content
 
 Page = namedtuple("Page",['url','word_count','tokens'])
 longest_page = Page(url = "", word_count = 0, tokens = [])
@@ -47,7 +46,7 @@ def extract_next_links(url, resp):
         return compiled_links
     # ====== HTML ======== 
     try:
-        soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
+        soup_info = BeautifulSoup(resp.raw_response.content, "html.parser") # this is the return of the information which will be paresed in html
         
         visible_text = soup_info.get_text(strip=True) 
         tokens = tokenizer.tokenize(visible_text)
@@ -132,16 +131,13 @@ TRAPS = [ #list of strings representing keywords that indicate a trap
     'isg.ics.uci.edu/event',
     'doku.php',
     'ics.uci.edu/~eppstein/pix',
-    'grape.ics.uci.edj/wiki/public/timeline',
-    'login.php'
+    'grape.ics.uci.edu/wiki/public/timeline',
+    'grape.ics.uci.edu/wiki/asterix/timeline',
+    'login.php',
+    'ics.uci.edu/~baldig/learning/dan'
 ]
-'''
-calendar,
-ical,
-tribe,
-'''
 
-def is_trap(url: str) -> bool: # DETECT_TRAP
+def is_trap(url: str) -> bool: # detects if url is a trap
     global TRAPS
     for trap in TRAPS:
         if trap in url:
@@ -150,56 +146,43 @@ def is_trap(url: str) -> bool: # DETECT_TRAP
 
 duplicate_paths = set()
 DUPLICATES = [
-    'grape.ics.uci.ed/wiki/public/wiki'
+    'grape.ics.uci.edu/wiki/public/wiki',
+    'grape.ics.uci.edu/wiki/asterix/wiki',
+    'www.ics.uci.edu/~dechter'
 ]
+duplicate_queried_links = set()
+DUPLICATE_QUERIES = set([
+    'C=D;O=A',
+    'C=D;O=D',
+    'C=S;O=A',
+    'C=S;O=D',
+    'C=M;O=A',
+    'C=M;O=D',
+    'C=N;O=A',
+    'C=N;O=D'
+])
 def is_duplicate(parsed_url) -> bool: #duplicates hueristically
     global duplicate_paths
+    global duplicate_queried_links
     global DUPLICATES
+    global DUPLICATE_QUERIES
+    #query first
     string_url = f'{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}'
+    query = parsed_url.query
+    if query in DUPLICATE_QUERIES:
+        if string_url in duplicate_queried_links:
+            return True
+        else:
+            duplicate_queried_links.add(string_url)
+            return False
+    
     for duplicate in DUPLICATES:
         if duplicate in string_url:
+            if 'www.ics.uci.edu/~dechter' == duplicate: #~dechter urls:
+                return True
             if string_url in duplicate_paths:
                 return True
             else:
                 duplicate_paths.add(string_url)
                 return False
     return False
-
-
-
-'''
-
-Filtering:
-- ics open lab + from terminal 
-- Honor the politeness delay for each site 
-- Crawl all pages with high textual information content
-- Detect and avoid infinite traps
-- Detect and avoid sets of similar pages with no information
-- Detect and avoid dead URLs that return a 200 status but no data (click here to see what the different HTTP status codes mean Links to an external site.)
-- Detect and avoid crawling very large files, especially if they have low information value
-- Filter out invalid domains
-- Defragment
-
-
-- build parser
-- report stuff
-
-
-
-Functions:
-Extract_next_links(url, response) : “crawling” the url
-Parse the “response”
-Identify URL hyperlinks/report stuff
-Add hyperlinks to list
-Filtering:
-Defragment
-Filter out invalid domains
-Detect and avoid dead URLs that return a 200 status but no data (click here to see what the different HTTP status codes mean Links to an external site.)
-
-
-Is_valid(url) : check if link is valid
-Filtering:
-
-
-
-'''
