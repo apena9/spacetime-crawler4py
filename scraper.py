@@ -6,6 +6,7 @@ from subdomains import update_subdomains
 from collections import namedtuple
 
 from bs4 import BeautifulSoup
+from lxml import etree
 import tokenizer
 
 def scraper(url, resp):
