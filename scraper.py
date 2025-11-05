@@ -46,7 +46,7 @@ def extract_next_links(url, resp):
         return compiled_links
     # ====== HTML ======== 
     try:
-        soup_info = BeautifulSoup(resp.raw_response.content, "html.parser") # this is the return of the information which will be paresed in html
+        soup_info = BeautifulSoup(resp.raw_response.content, "lxml") # this is the return of the information which will be paresed in html
         
         visible_text = soup_info.get_text(strip=True) 
         tokens = tokenizer.tokenize(visible_text)
