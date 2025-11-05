@@ -52,10 +52,10 @@ def extract_next_links(url, resp):
         visible_text = soup_info.get_text(strip=True) 
         tokens = tokenizer.tokenize(visible_text)
 
-        this_page = Page(url = url, word_count = len(tokens), tokens=tokens)
-        longest_page = this_page if (this_page.word_count > longest_page.word_count) else longest_page # els: no-op
-        
-        tokenizer.compute_word_frequencies(tokens, all_word_frequencies)
+        if tokenizer.valid_tokens(tokens):
+            this_page = Page(url = url, word_count = len(tokens), tokens=tokens)
+            longest_page = this_page if (this_page.word_count > longest_page.word_count) else longest_page # els: no-op
+            tokenizer.compute_word_frequencies(tokens, all_word_frequencies)
 
         if len(tokens) < MIN_VISIBLE_WORDS: # treat as dead/empty HTML page
             return []

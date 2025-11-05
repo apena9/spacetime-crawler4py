@@ -18,6 +18,15 @@ def compute_word_frequencies(token_list: list[str], token_frequencies: dict):
         except KeyError:
             token_frequencies[token] = 1
 
+def valid_tokens(tokens:list[str]):
+    '''
+    Takes a list of tokens and determines if it should be counted (for longest_page mainly)
+    '''
+    for token in tokens:
+        if len(token) > 1:
+            return True
+    return False
+
 def tokenize(text):
     """
     Tokenizes the text of a single file (soup.get_text).
@@ -51,12 +60,6 @@ def tokenize(text):
                 if token not in stop_words:
                     stemmed = stemmer.stem(token)
                     tokens.append(stemmed)
-
-        # sort by frequency in descending order
-        # top_50 = sorted(word_freq.items(), key=lambda x: x[1], reverse=True)[:50]
-
-        # for i, (word, count) in enumerate(top_50, start=1):
-        #     print(f"{i:2}. {word:<15} {count}")
 
         return tokens
 
