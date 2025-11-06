@@ -1,0 +1,218 @@
+﻿Assignment #2 Crawler Write Up
+1. Unique pages found:
+1. During our runtime, we identified 25199 unique URLs. These links were filtered to remove duplicates and invalid entries, ensuring only distinct and active pages were counted. 
+2. Longest Page found:
+1. The page with the highest word count contained http://www.ics.uci.edu/~cs224  words, making it the longest document in our dataset. The results allow us insight into the content density of the pages we crawled.
+       3.  50 most common words:
+1. The 50 most common words found across all webpages crawled included :
+      1. <-> => <83040>
+      2. <project> => <56033>
+      3. <add> => <55294>
+      4. <years> => <53435>
+      5. <ago> => <51516>
+      6. <use> => <51408>
+      7. <1> => <48558>
+      8. <2> => <40319>
+      9. <kb> => <39527>
+      10. <student> => <38114>
+      11. <data> => <33935>
+      12. <pdf> => <31693>
+      13. <uci> => <30615>
+      14. <3> => <27156>
+      15. <5> => <26844>
+      16. <file> => <24724>
+      17. <system> => <24416>
+      18. <software> => <24375>
+      19. <http> => <24058>
+      20. <information> => <22504>
+      21. <ics> => <22284>
+      22. <4> => <20816>
+      23. <0> => <20808>
+      24. <page> => <20343>
+      25. <course> => <19364>
+      26. <database> => <19137>
+      27. <research> => <19089>
+      28. <10> => <18559>
+      29. <learning> => <17920>
+      30. <e> => <17847>
+      31. <lecture> => <17589>
+      32. <computer> => <17063>
+      33. <change> => <16761>
+      34. <program> => <16745>
+      35. <one> => <16556>
+      36. <note> => <16540>
+      37. <application> => <16420>
+      38. <science> => <15620>
+      39. <update> => <15402>
+      40. <time> => <15368>
+      41. <8> => <15307>
+      42. <c> => <15173>
+      43. <also> => <14961>
+      44. <search> => <14893>
+      45. <class> => <14892>
+      46. <ppt> => <14295>
+      47. <grade> => <14088>
+      48. <make> => <13895>
+      49. <work> => <13552>
+      50. <group> => <13258>
+
+
+These frequently occurring words provide insight into the dominant themes and patterns within the dataset. 
+      4. Subdomains: 
+1. The following are the listed subdomains ordered alphabetically and the number of unique pages detected in each subdomain
+      1. Subdomain: accessibility.ics.uci.edu --> 35
+      2. Subdomain: aiclub.ics.uci.edu --> 6
+      3. Subdomain: acoi.ics.uci.edu --> 1303
+      4. Subdomain: archive-beta.ics.uci.edu --> 84
+      5. Subdomain: archive.ics.uci.edu --> 2281
+      6. Subdomain: asterix.ics.uci.edu --> 49
+      7. Subdomain: asterixdb.ics.uci.edu --> 3
+      8. Subdomain: auge.ics.uci.edu --> 1
+      9. Subdomain: benzene-34.ics.uci.edu --> 2
+      10. Subdomain: betapro.proteomics.ics.uci.edu --> 6
+      11. Subdomain: capstone.cs.uci.edu --> 73
+      12. Subdomain: cbcl.ics.uci.edu --> 2
+      13. Subdomain: cdb.ics.uci.edu --> 429
+      14. Subdomain: cert.ics.uci.edu --> 311
+      15. Subdomain: checkmate.ics.uci.edu --> 12
+      16. Subdomain: chenli.ics.uci.edu --> 103
+      17. Subdomain: cherry.ics.uci.edu --> 2
+      18. Subdomain: chime.ics.uci.edu --> 4
+      19. Subdomain: cgvw.ics.uci.edu --> 4
+      20. Subdomain: cir­cadiomics.ics.uci.edu --> 39
+      21. Subdomain: closeup.ics.uci.edu --> 1
+      22. Subdomain: cloudberry.ics.uci.edu --> 1048
+      23. Subdomain: cocoa-krispies.ics.uci.edu --> 1
+      24. Subdomain: code.ics.uci.edu --> 259
+      25. Subdomain: computableplant.ics.uci.edu --> 709
+      26. Subdomain: contact.ics.uci.edu --> 10
+      27. Subdomain: contact14.ics.uci.edu --> 1
+      28. Subdomain: coronavirustwittermap.ics.uci.edu --> 44
+      29. Subdomain: courselisting.ics.uci.edu --> 503
+      30. Subdomain: create.ics.uci.edu --> 926
+      31. Subdomain: cs.ics.uci.edu --> 222
+      32. Subdomain: cyberclub.ics.uci.edu --> 47
+      33. Subdomain: cybert.ics.uci.edu --> 82
+      34. Subdomain: dataguard.ics.uci.edu --> 2
+      35. Subdomain: datalab.ics.uci.edu --> 2
+      36. Subdomain: dataprotector.ics.uci.edu --> 2
+      37. Subdomain: dblp.ics.uci.edu --> 2
+      38. Subdomain: dgillen.ics.uci.edu --> 454
+      39. Subdomain: ds4all.ics.uci.edu --> 20
+      40. Subdomain: duke.ics.uci.edu --> 2
+      41. Subdomain: duttgroup.ics.uci.edu --> 2840
+      42. Subdomain: dynamo.ics.uci.edu --> 471
+      43. Subdomain: edgelab.ics.uci.edu --> 58
+      44. Subdomain: emj-pc.ics.uci.edu --> 1
+      45. Subdomain: emj.ics.uci.edu --> 1517
+      46. Subdomain: evoke.ics.uci.edu --> 27
+      47. Subdomain: esl.ics.uci.edu --> 1
+      48. Subdomain: fano.ics.uci.edu --> 70
+      49. Subdomain: flamingo.ics.uci.edu --> 484
+      50. Subdomain: fr.ics.uci.edu --> 51
+      51. Subdomain: frost.ics.uci.edu --> 4
+      52. Subdomain: futurehealth.ics.uci.edu --> 2650
+      53. Subdomain: gbolcer.ics.uci.edu --> 2
+      54. Subdomain: gonet.genomics.ics.uci.edu --> 1
+      55. Subdomain: grape.ics.uci.edu --> 124981
+      56. Subdomain: graphmod.ics.uci.edu --> 19
+      57. Subdomain: graphics.ics.uci.edu --> 58
+      58. Subdomain: hack.ics.uci.edu --> 15
+      59. Subdomain: hai.ics.uci.edu --> 45
+      60. Subdomain: hana.ics.uci.edu --> 3
+      61. Subdomain: hobbes.ics.uci.edu --> 106
+      62. Subdomain: hombao.ics.uci.edu --> 4
+      63. Subdomain: honors.ics.uci.edu --> 1
+      64. Subdomain: hpi.ics.uci.edu --> 973
+      65. Subdomain: i-sensorium.ics.uci.edu --> 26
+      66. Subdomain: iasl.ics.uci.edu --> 4
+      67. Subdomain: ibook.ics.uci.edu --> 2
+      68. Subdomain: icde2023.ics.uci.edu --> 2122
+      69. Subdomain: industryshowcase.ics.uci.edu --> 1181
+      70. Subdomain: informatics.ics.uci.edu --> 4
+      71. Subdomain: informatics.mt-live.ics.uci.edu --> 1
+      72. Subdomain: insite.ics.uci.edu --> 74
+      73. Subdomain: intranet.ics.uci.edu --> 19
+      74. Subdomain: ipubmed.ics.uci.edu --> 7
+      75. Subdomain: isg.ics.uci.edu --> 3319
+      76. Subdomain: jgarcia.ics.uci.edu --> 632
+      77. Subdomain: jujube.ics.uci.edu --> 6
+      78. Subdomain: kdd.ics.uci.edu --> 4
+      79. Subdomain: labbie.ics.uci.edu --> 1
+      80. Subdomain: lolth.ics.uci.edu --> 1
+      81. Subdomain: luci.ics.uci.edu --> 29
+      82. Subdomain: mailman.ics.uci.edu --> 89
+      83. Subdomain: malek.ics.uci.edu --> 27
+      84. Subdomain: mapgrid.ics.uci.edu --> 2
+      85. Subdomain: mcs.ics.uci.edu --> 183
+      86. Subdomain: mds.ics.uci.edu --> 330
+      87. Subdomain: mdogucu.ics.uci.edu --> 16
+      88. Subdomain: metaviz.ics.uci.edu --> 1
+      89. Subdomain: mhcid.ics.uci.edu --> 1524
+      90. Subdomain: mhcis.ics.uci.edu --> 1
+      91. Subdomain: mine10.ics.uci.edu --> 1
+      92. Subdomain: mine5.ics.uci.edu --> 2
+      93. Subdomain: mlphysics.ics.uci.edu --> 1268
+      94. Subdomain: mondego.ics.uci.edu --> 1
+      95. Subdomain: motifmap-rna.ics.uci.edu --> 1
+      96. Subdomain: motifmap.ics.uci.edu --> 3
+      97. Subdomain: mover.ics.uci.edu --> 477
+      98. Subdomain: mswe.ics.uci.edu --> 146
+      99. Subdomain: mse.ics.uci.edu --> 1183
+      100. Subdomain: mt-live.ics.uci.edu --> 1
+      101. Subdomain: mupro.proteomics.ics.uci.edu --> 8
+      102. Subdomain: nalini.ics.uci.edu --> 165
+      103. Subdomain: ngs.ics.uci.edu --> 81253
+      104. Subdomain: oai.ics.uci.edu --> 951
+      105. Subdomain: old-reactions.ics.uci.edu --> 2
+      106. Subdomain: password.ics.uci.edu --> 1
+      107. Subdomain: pasteur.ics.uci.edu --> 2
+      108. Subdomain: pepito.proteomics.ics.uci.edu --> 8
+      109. Subdomain: plrg.ics.uci.edu --> 356
+      110. Subdomain: psearch.ics.uci.edu --> 22
+      111. Subdomain: radicle.ics.uci.edu --> 1
+      112. Subdomain: reactions.ics.uci.edu --> 2
+      113. Subdomain: redmiles.ics.uci.edu --> 10
+      114. Subdomain: riscit.ics.uci.edu --> 2
+      115. Subdomain: satware.ics.uci.edu --> 1
+      116. Subdomain: scale.ics.uci.edu --> 43
+      117. Subdomain: scratch.proteomics.ics.uci.edu --> 9
+      118. Subdomain: seal.ics.uci.edu --> 94
+      119. Subdomain: selectpro.proteomics.ics.uci.edu --> 26
+      120. Subdomain: seraja.ics.uci.edu --> 1
+      121. Subdomain: sherlock.ics.uci.edu --> 59
+      122. Subdomain: sidepro.proteomics.ics.uci.edu --> 2
+      123. Subdomain: sli.ics.uci.edu --> 26
+      124. Subdomain: sdcl.ics.uci.edu --> 7
+      125. Subdomain: sprout.ics.uci.edu --> 3
+      126. Subdomain: stairs.ics.uci.edu --> 17
+      127. Subdomain: stat.ics.uci.edu --> 147
+      128. Subdomain: statconsulting.ics.uci.edu --> 236
+      129. Subdomain: statistics-stage.ics.uci.edu --> 115
+      130. Subdomain: student-council.ics.uci.edu --> 9
+      131. Subdomain: studentcouncil.ics.uci.edu --> 8
+      132. Subdomain: students.ics.uci.edu --> 1
+      133. Subdomain: summeracademy.ics.uci.edu --> 49
+      134. Subdomain: tad.ics.uci.edu --> 12
+      135. Subdomain: tastier.ics.uci.edu --> 3
+      136. Subdomain: tippers.ics.uci.edu --> 2
+      137. Subdomain: tippersweb.ics.uci.edu --> 19
+      138. Subdomain: tmbpro.ics.uci.edu --> 3
+      139. Subdomain: transformativeplay.ics.uci.edu --> 100
+      140. Subdomain: tutoring.ics.uci.edu --> 907
+      141. Subdomain: tutors.ics.uci.edu --> 1
+      142. Subdomain: ugradforms.ics.uci.edu --> 21
+      143. Subdomain: unite.ics.uci.edu --> 250
+      144. Subdomain: vision.ics.uci.edu --> 3078
+      145. Subdomain: wiki.ics.uci.edu --> 21
+      146. Subdomain: www.cert.ics.uci.edu --> 5
+      147. Subdomain: www.checkmate.ics.uci.edu --> 4
+      148. Subdomain: www.cs.uci.edu --> 1046
+      149. Subdomain: www.graphics.ics.uci.edu --> 19
+      150. Subdomain: www.ics.uci.edu --> 33998
+      151. Subdomain: www.informatics.ics.uci.edu --> 6
+      152. Subdomain: www.informatics.uci.edu --> 194878
+      153. Subdomain: www.isg.ics.uci.edu --> 2
+      154. Subdomain: www.stat.uci.edu --> 6245
+      155. Subdomain: www-db.ics.uci.edu --> 278
+      156. Subdomain: xtune.ics.uci.edu --> 33
