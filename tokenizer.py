@@ -1,3 +1,5 @@
+import json
+import os
 from nltk.corpus import stopwords # pip install nltk
 from krovetzstemmer import Stemmer # pip install krovetzstemmer
 
@@ -66,3 +68,37 @@ def tokenize(text):
     except Exception as e:
         print(f"Error in tokenize: {e}")
         return {}
+def build_inverted_index(folder):
+    I = defaultdict(list)  #  HashTable set up like seen in notes
+    n = 0 # starting at 0 for docs being parsed 
+
+    for root, dirs, files in os.walk(folder):
+        for filename in files:
+            if not filename.endswith(".json"):
+                continue
+
+            n += 1  # count document to keep track of where each token came from
+            path = os.path.join(root, filename) #simply just getting the pathj for folders !
+
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    doc = json.load(f) # using load will allow us to easily parse and use information back
+                text = doc.get("content", "") # will try and grab anything labled within content // may need to update and debug as "content"
+                # ... appears elsewhere too
+                if not text:
+                    continue
+
+                T = tokenize(text)  # ← Parse(d)
+                token_freq = {}
+                for t in T:
+                    token_freq[t] = token_freq.get(t, 0) + 1  # count tf
+
+                # For each token, update postings
+                for t, tf in token_freq.items():
+                    posting = {"doc_id": path, "tf": tf}
+                    I[t].append(posting)
+
+            except Exception as e:
+                print(f"Error processing {e}")
+
+    return I  # ← return I
